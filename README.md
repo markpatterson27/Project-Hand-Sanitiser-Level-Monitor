@@ -1,6 +1,6 @@
-# Starter Project
+# Project: Hand Sanitiser Level Monitor 
 
-Template files and folders for starting new IoT projects.
+IoT project looking at possible ways to measure level of sanitiser left at sanitiser stations. 
 
 <br>
 
@@ -27,7 +27,7 @@ Wire the components as shown in the diagram.
 * 
 * 
 * connecting wires
-* raspberry pi / wemos d1 mini
+* ESP32 dev board (Lolin D32)
 
 
 <br />
@@ -42,11 +42,9 @@ Wire the components as shown in the diagram.
 | --- | --- | --- |
 |  |  |  |
 
-![pin diagram](assets/rp2_pinout.png)
-![pin diagram](assets/wemos-d1-mini-pinout.png)
 ![pin diagram](assets/d32_pro_v2-pinout.jpg)
-![pin diagram](assets/JetsonNano-expansion-pinout.png)
 
-<br>
+
+<br />
 
 ## References
