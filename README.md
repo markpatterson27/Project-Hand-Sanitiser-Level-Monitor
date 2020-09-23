@@ -64,8 +64,8 @@ Wire the components as shown in the diagram. Place the other end of the wire on 
 | Pin No | Function | Device Connection |
 | --- | --- | --- |
 | 13 | GPIO13/Touch4 | Full height strip |
-| 13 | GPIO12/Touch5 | Top strip |
-| 13 | GPIO14/Touch6 | Bottom strip |
+| 12 | GPIO12/Touch5 | Top strip |
+| 14 | GPIO14/Touch6 | Bottom strip |
 |  |  |  |
 
 <br />
