@@ -18,7 +18,7 @@ IoT project looking at possible ways to measure level of sanitiser left at sanit
 
 <br>
 
-## Circuit Diagram
+## Circuit Diagram - Single Wire
 Wire the components as shown in the diagram. Place the other end of the wire on the liquid volume to be measured.
 
 <!-- ![circuit diagram](assets/###-circuit-diagram_schem.svg) -->
@@ -26,7 +26,6 @@ Wire the components as shown in the diagram. Place the other end of the wire on 
 #### Components Needed
 * wire
 * ESP32 dev board (Lolin D32)
-
 
 <br />
 
@@ -39,6 +38,37 @@ Wire the components as shown in the diagram. Place the other end of the wire on 
 | Pin No | Function | Device Connection |
 | --- | --- | --- |
 | 27 | GPIO27/Touch7 | Wire strand |
+|  |  |  |
+
+<br />
+
+## Circuit Diagram - Multi-Point Foil Strips
+Wire the components as shown in the diagram. Place the other end of the wire on the liquid volume to be measured.
+
+<!-- ![circuit diagram](assets/###-circuit-diagram_schem.svg) -->
+
+#### Components Needed
+* wire
+* foil tape
+* ESP32 dev board (Lolin D32)
+
+
+<br />
+
+![breadboard diagram](assets/lolin-d32-multi-point-capacitance-circuit-diagram_bb.png)
+
+<br />
+
+### Default Pin Wiring
+
+| Pin No | Function | Device Connection |
+| --- | --- | --- |
+| 13 | GPIO13/Touch4 | Full height strip |
+| 13 | GPIO12/Touch5 | Top strip |
+| 13 | GPIO14/Touch6 | Bottom strip |
+|  |  |  |
+
+<br />
 
 ![pin diagram](assets/d32_pro_v2-pinout.jpg)
 
