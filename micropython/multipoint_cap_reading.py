@@ -95,6 +95,11 @@ def run():
         ts = utime.localtime()
         ts = '{0:04d}-{1:02d}-{2:02d}T{3:02d}:{4:02d}:{5:02d}Z'.format(
             ts[0], ts[1], ts[2], ts[3], ts[4], ts[5])
+        
+        c_top = t_top.read()
+        c_bottom = t_bottom.read()
+        c_full = t_full.read()
+        c_calibrated = c_full / (c_bottom - c_top)
 
         mqtt_payload = {
             'timestamp': ts,
@@ -103,9 +108,10 @@ def run():
                 'method': 'multipoint'
             },
             'measures': {
-                'capacitance-top': t_top.read(),
-                'capacitance-bottom': t_bottom.read(),
-                'capacitance-full-length': t_full.read(),
+                'capacitance-top': c_top,
+                'capacitance-bottom': c_bottom,
+                'capacitance-full-length': c_full,
+                'capacitance-calibrated': c_calibrated,
                 'battery': d32_batterymon.read_battery()
             }
         }
