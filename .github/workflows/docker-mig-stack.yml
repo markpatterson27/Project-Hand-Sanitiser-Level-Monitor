@@ -47,33 +47,33 @@ jobs:
 
       # check that mosquitto can publish a message
       - name: Mosquitto publish
-        run: mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t mig-stack/messages -m "hello runner" -d
+        run: mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/messages -m "hello runner" -d
 
       # check influxdb
       - name: Check database created in influxdb
-        run: docker exec migstack_influxdb_1 influx -execute "SHOW DATABASES" | grep -q MIGStack
+        run: docker exec handsanitiserlevelmonitor_influxdb_1 influx -execute "SHOW DATABASES" | grep -q HandSanitiserLevels
 
       # wait for fowarder
       - name: wait for and check forwarder
-        run: mosquitto_sub -h 127.0.0.1 -p 1883 -u mqtt -P password -t mig-stack/messages -C 1 | grep -q Forwarder
+        run: mosquitto_sub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/messages -C 1 | grep -q Forwarder
       
       # check forwarder forwards messages
       - name: publish sensor readings message
         run: |
           sleep 10
           MESSAGE="{\"meta-data\":{\"device\":\"test\"},\"measures\":{\"sensor1\":5,\"sensor2\":43}}"
-          mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t mig-stack/test/sensor-reading -m $MESSAGE -d
+          mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/test/sensor-reading -m $MESSAGE -d
           
       - name: Check sensor-readings table exists
         run: |
           sleep 10
-          docker exec migstack_influxdb_1 influx -database MIGStack -execute "SHOW MEASUREMENTS" | grep -q sensor-readings
+          docker exec handsanitiserlevelmonitor_influxdb_1 influx -database HandSanitiserLevels -execute "SHOW MEASUREMENTS" | grep -q sensor-readings
 
       - name: Check sensor values in table
         run: |
-          docker exec migstack_influxdb_1 influx -database "MIGStack" -execute "SELECT SUM(sensor1) FROM \"2_weeks\".\"sensor-readings\" WHERE device = 'test'" | grep -q 5
-          docker exec migstack_influxdb_1 influx -database "MIGStack" -execute "SELECT SUM(sensor2) FROM \"2_weeks\".\"sensor-readings\" WHERE device = 'test'" | grep -q 43
+          docker exec handsanitiserlevelmonitor_influxdb_1 influx -database "HandSanitiserLevels" -execute "SELECT SUM(sensor1) FROM \"2_weeks\".\"sensor-readings\" WHERE device = 'test'" | grep -q 5
+          docker exec handsanitiserlevelmonitor_influxdb_1 influx -database "HandSanitiserLevels" -execute "SELECT SUM(sensor2) FROM \"2_weeks\".\"sensor-readings\" WHERE device = 'test'" | grep -q 43
 
       # check grafana running
       - name: Check grafana cli exists
-        run: docker exec migstack_grafana_1 grafana-cli -v | grep -q "Grafana CLI"
+        run: docker exec handsanitiserlevelmonitor_grafana_1 grafana-cli -v | grep -q "Grafana CLI"
