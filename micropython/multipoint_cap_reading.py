@@ -38,6 +38,12 @@ CLIENT_ID = uos.uname()[0].upper().encode('utf-8') + b"-" + ubinascii.hexlify(ma
 BASE_TOPIC = b"hand-sanitiser-levels"
 # SUBSCRIBE_TOPIC = BASE_TOPIC + b'/' + CLIENT_ID + b'/messages/#'
 
+poll_interval = 5   # time in minutes
+polling_hours = {   # hour of day
+    "start": 8,
+    "end": 20
+}
+
 
 # try connecting to access point
 def try_connection(nic):
@@ -88,12 +94,17 @@ def run():
     try:
         
         wifi_connect()
-        set_time()
+        # set_time()
         # if machine.reset_cause() != machine.DEEPSLEEP_RESET:
         #     set_time()
 
         ts = utime.localtime()
-        ts = '{0:04d}-{1:02d}-{2:02d}T{3:02d}:{4:02d}:{5:02d}Z'.format(
+        # if rtc not set, or first poll of polling period
+        if ts[0] == 2000 or ts[3] == polling_hours['start']:
+            set_time()
+            ts = utime.localtime()
+
+        ts_format = '{0:04d}-{1:02d}-{2:02d}T{3:02d}:{4:02d}:{5:02d}Z'.format(
             ts[0], ts[1], ts[2], ts[3], ts[4], ts[5])
         
         c_top = t_top.read()
@@ -102,7 +113,7 @@ def run():
         c_calibrated = c_full / (c_bottom - c_top)
 
         mqtt_payload = {
-            'timestamp': ts,
+            'timestamp': ts_format,
             'meta-data': {
                 'device': CLIENT_ID,
                 'method': 'multipoint'
@@ -134,7 +145,12 @@ def run():
                 d32_led.blink(LED_PIN, 3, 0.3, 0.3)
                 break
         
-        # machine.deepsleep(5*60*1000)
+        if ts[3] > polling_hours['end'] or ts[3] < polling_hours['start']:
+            h = (24 - polling_hours['end'] + polling_hours['start'])%24
+            m = h*60 - ts[4]
+            machine.deepsleep(m*60*1000)
+        else:
+            machine.deepsleep(poll_interval*60*1000)
             
     except:
         print("something went wrong")
