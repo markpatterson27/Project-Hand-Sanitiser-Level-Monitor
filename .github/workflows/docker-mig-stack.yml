@@ -39,7 +39,7 @@ jobs:
 
       # build and run stack
       - name: Compose up
-        run: docker-compose -f "docker-compose-stack/docker-compose.yml" up -d --build
+        run: docker-compose -f "docker-compose-stack/docker-compose.yml" --env-file "docker-compose-stack/.env" up -d --build
 
       # show running containers
       - name: show running containers
