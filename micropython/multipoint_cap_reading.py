@@ -193,7 +193,7 @@ def run():
             led_blink = False
 
         if ts[3] > polling_hours['end'] or ts[3] < polling_hours['start']:
-            h = (24 - polling_hours['end'] + polling_hours['start'])%24
+            h = (24 - ts[3] + polling_hours['start'])%24
             m = h*60 - ts[4]
             machine.deepsleep(m*60*1000)
         else:
