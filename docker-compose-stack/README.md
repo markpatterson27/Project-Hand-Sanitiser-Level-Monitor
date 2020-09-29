@@ -2,7 +2,7 @@
 
 ![Stack-Test](https://github.com/markpatterson27/Project-Hand-Sanitiser-Level-Monitor/workflows/Stack-Test/badge.svg)
 
-Docker compose file for setting up a MQTT, InfluxDB, Grafana stack.
+Docker compose file for setting up a MQTT, InfluxDB, Grafana stack. An MQTT to Azure IOT Central container is also included.
 
 <br />
 
