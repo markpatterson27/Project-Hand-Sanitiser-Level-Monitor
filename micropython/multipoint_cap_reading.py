@@ -103,11 +103,11 @@ def mqtt_cb(topic, msg):
             led_status_blink = True
         elif msg == b"off":
             led_status_blink = False
-        elif msg.split[b":"][0] == b"blink":
+        elif msg.split(b":")[0] == b"blink":
             led_blink = True
             try:
-                if int(msg.split[b":"][1]).isdigit() and int(msg.split[b":"][1]) != 0:
-                    led_blink_count = int(msg.split[b":"][1])
+                if msg.split(b":")[1].isdigit() and int(msg.split(b":")[1]) != 0:
+                    led_blink_count = int(msg.split(b":")[1])
                 else:
                     led_blink_count = 10
             except IndexError:
@@ -201,7 +201,7 @@ def run():
             
     except:
         print("something went wrong")
-        while _ in range(3):
+        for _ in range(3):
             d32_led.blink(LED_PIN, 4, 0.1, 0.1)
             utime.sleep(1)
     finally:
