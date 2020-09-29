@@ -36,8 +36,11 @@ led = machine.Pin(LED_PIN, machine.Pin.OUT, value=1)
 SERVERS = config.MQTT_SERVERS
 CLIENT_ID = uos.uname()[0].upper().encode('utf-8') + b"-" + ubinascii.hexlify(machine.unique_id())
 BASE_TOPIC = b"hand-sanitiser-levels"
-# SUBSCRIBE_TOPIC = BASE_TOPIC + b'/' + CLIENT_ID + b'/messages/#'
+SUBSCRIBE_TOPIC = BASE_TOPIC + b'/' + CLIENT_ID + b'/messages/#'
 
+led_status_blink = True
+led_blink = False
+led_blink_count = 10
 poll_interval = 5   # time in minutes
 polling_hours = {   # hour of day
     "start": 8,
@@ -89,8 +92,45 @@ def set_time():
     except:
         print('ntp timeout')
 
+# mqtt callback
+def mqtt_cb(topic, msg):
+    global led_status_blink, led_blink, led_blink_count
+    global poll_interval, polling_hours
+
+    # led control
+    if topic == SUBSCRIBE_TOPIC[:-1]+ b"led":
+        if msg == b"on":
+            led_status_blink = True
+        elif msg == b"off":
+            led_status_blink = False
+        elif msg.split[b":"][0] == b"blink":
+            led_blink = True
+            try:
+                if int(msg.split[b":"][1]).isdigit() and int(msg.split[b":"][1]) != 0:
+                    led_blink_count = int(msg.split[b":"][1])
+                else:
+                    led_blink_count = 10
+            except IndexError:
+                led_blink_count = 10
+
+    # change polling interval
+    elif topic == SUBSCRIBE_TOPIC[:-1]+b"poll-interval":
+        if msg.isdigit():
+            poll_interval = msg
+
+    # change polling hours
+    elif topic == SUBSCRIBE_TOPIC[:-1]+b"polling-hours":
+        if msg[0]['start'].isdigit():
+            polling_hours = msg[0]['start']
+        if msg[0]['end'].isdigit():
+            polling_hours = msg[0]['end']
+
+
 # main loop
 def run():
+    global led_status_blink, led_blink, led_blink_count
+    global poll_interval, polling_hours
+    
     try:
         
         wifi_connect()
@@ -139,12 +179,19 @@ def run():
             else:
                 c.publish(BASE_TOPIC + b'/' + CLIENT_ID, json.dumps(mqtt_payload))
                 print("MQTT message sent to {}".format(server))
+                # c.disconnect()
+                c.set_callback(mqtt_cb)
+                c.subscribe(SUBSCRIBE_TOPIC)
+                if led_status_blink:
+                    d32_led.blink(LED_PIN, 3, 0.3, 0.3)
+                c.check_msg()
                 c.disconnect()
-                # c.set_callback(mqtt_cb)
-                # c.subscribe(SUBSCRIBE_TOPIC)
-                d32_led.blink(LED_PIN, 3, 0.3, 0.3)
                 break
-        
+
+        if led_blink:
+            d32_led.blink(LED_PIN, led_blink_count, 0.2, 0.2)
+            led_blink = False
+
         if ts[3] > polling_hours['end'] or ts[3] < polling_hours['start']:
             h = (24 - polling_hours['end'] + polling_hours['start'])%24
             m = h*60 - ts[4]
@@ -158,4 +205,4 @@ def run():
             d32_led.blink(LED_PIN, 4, 0.1, 0.1)
             utime.sleep(1)
     finally:
-        pass
+        c.disconnect()
