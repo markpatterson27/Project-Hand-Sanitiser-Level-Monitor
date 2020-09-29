@@ -97,6 +97,10 @@ def mqtt_cb(topic, msg):
     global led_status_blink, led_blink, led_blink_count
     global poll_interval, polling_hours
 
+    print("message received")
+    print("topic: ", topic)
+    print("message: ", msg)
+
     # led control
     if topic == SUBSCRIBE_TOPIC[:-1]+ b"led":
         if msg == b"on":
@@ -117,6 +121,7 @@ def mqtt_cb(topic, msg):
     elif topic == SUBSCRIBE_TOPIC[:-1]+b"poll-interval":
         if msg.isdigit():
             poll_interval = msg
+        print("poll interval: ", poll_interval)
 
     # change polling hours
     elif topic == SUBSCRIBE_TOPIC[:-1]+b"polling-hours":
@@ -124,6 +129,7 @@ def mqtt_cb(topic, msg):
             polling_hours = msg[0]['start']
         if msg[0]['end'].isdigit():
             polling_hours = msg[0]['end']
+        print("polling hours: ", polling_hours)
 
 
 # main loop
