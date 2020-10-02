@@ -103,6 +103,10 @@ def set_time():
             break
     if not time_set:
         ntptime.host = config.NTP_SERVER
+        try:
+            ntptime.settime()
+        except:
+            print('ntp timeout')
 
 # mqtt callback
 def mqtt_cb(topic, msg):
