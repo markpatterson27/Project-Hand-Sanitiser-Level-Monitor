@@ -198,12 +198,14 @@ def run():
             d32_led.blink(LED_PIN, led_blink_count, 0.2, 0.2)
             led_blink = False
 
-        if ts[3] > polling_hours['end'] or ts[3] < polling_hours['start']:
+        if ts[0] != 2000 and (ts[3] > polling_hours['end'] or ts[3] < polling_hours['start']):
             h = (24 - ts[3] + polling_hours['start'])%24
             m = h*60 - ts[4]
-            machine.deepsleep(m*60*1000)
         else:
-            machine.deepsleep(poll_interval*60*1000)
+            m = poll_interval
+
+        print("deep sleeping for {} minutes".format(m))
+        machine.deepsleep(m*60*1000)
             
     except:
         print("something went wrong")
