@@ -202,11 +202,11 @@ def run():
                 print("trying to connect to {}".format(server))
                 c = MQTTClient(CLIENT_ID, server_address_parts[0], server_address_parts[1])
                 c.connect()
-                disconnected = False
+                # disconnected = False
             except:
                 print("{} not found".format(server))
             else:
-                c.publish(BASE_TOPIC + b'/' + CLIENT_ID, json.dumps(mqtt_payload))
+                c.publish(BASE_TOPIC + b'/' + CLIENT_ID + b'/sensor-reading', json.dumps(mqtt_payload))
                 print("MQTT message sent to {}".format(server))
                 # c.disconnect()
                 c.set_callback(mqtt_cb)
