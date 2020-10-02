@@ -9,6 +9,8 @@ ACCESS_POINTS = {
 
 MQTT_SERVERS = ("ip address:port", "ip address:port") # need to define more than one ip address
 
+NTP_SERVER = "ip address or FQDN"
+
 # pins ESP32
 LED = const(5)
 # SCL = const(22)

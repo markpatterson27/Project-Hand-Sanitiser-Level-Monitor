@@ -47,6 +47,9 @@ polling_hours = {   # hour of day
     "end": 20
 }
 
+# NTP settings
+# ntptime.host = config.NTP_SERVER
+
 
 # try connecting to access point
 def try_connection(nic):
@@ -87,10 +90,17 @@ def wifi_connect():
 
 # set rtc
 def set_time():
-    try:
-        ntptime.settime()
-    except:
-        print('ntp timeout')
+    time_set = False
+    for _ in range(2):
+        try:
+            ntptime.settime()
+        except:
+            print('ntp timeout')
+        else:
+            time_set = True
+            break
+    if not time_set:
+        ntptime.host = config.NTP_SERVER
 
 # mqtt callback
 def mqtt_cb(topic, msg):

@@ -26,9 +26,9 @@ jobs:
       # - name: Install mosquitto
       #   run: sudo apt update && sudo apt-get install -y mosquitto
 
-      # install mosquitto clients
-      - name: Install mosquitto clients
-        run: sudo apt update && sudo apt-get install -y mosquitto-clients
+      # install additional software
+      - name: Install mosquitto clients and ntpdate
+        run: sudo apt update && sudo apt-get install -y mosquitto-clients ntpdate
 
       # # run mosquitto in verbose mode
       # - name: ReStart mosquitto
@@ -77,3 +77,7 @@ jobs:
       # check grafana running
       - name: Check grafana cli exists
         run: docker exec handsanitiserlevelmonitor_grafana_1 grafana-cli -v | grep -q "Grafana CLI"
+
+      # check ntp server running
+      - name: Check ntp
+        run: ntpdate -q 127.0.0.1
