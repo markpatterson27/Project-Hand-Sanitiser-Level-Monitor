@@ -39,6 +39,7 @@ Some of the docker services are mapped to non-standard ports.
 
 | Port | Service |
 |---|---|
+| 123 | NTP |
 | 1883 | MQTT Broker |
 | 3000 | Grafana |
 
