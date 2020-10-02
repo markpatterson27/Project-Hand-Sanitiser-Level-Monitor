@@ -50,6 +50,8 @@ polling_hours = {   # hour of day
 # NTP settings
 # ntptime.host = config.NTP_SERVER
 
+location="nowhere"
+
 
 # try connecting to access point
 def try_connection(nic):
@@ -105,6 +107,7 @@ def set_time():
 # mqtt callback
 def mqtt_cb(topic, msg):
     global led_status_blink, led_blink, led_blink_count
+    global location
     global poll_interval, polling_hours
 
     print("message received")
@@ -127,6 +130,11 @@ def mqtt_cb(topic, msg):
             except IndexError:
                 led_blink_count = 10
 
+    # set location
+    elif topic == SUBSCRIBE_TOPIC[:-1]+b"location":
+        location = msg.decode()
+        print("location: ", location)
+    
     # change polling interval
     elif topic == SUBSCRIBE_TOPIC[:-1]+b"poll-interval":
         if msg.isdigit():
@@ -172,7 +180,8 @@ def run():
             'timestamp': ts_format,
             'meta-data': {
                 'device': CLIENT_ID,
-                'method': 'multipoint'
+                'method': 'multipoint',
+                'location': location
             },
             'measures': {
                 'capacitance-top': c_top,

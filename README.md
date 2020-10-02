@@ -29,6 +29,7 @@ IoT project looking at possible ways to measure level of sanitiser left at sanit
 | hand-sanitiser-levels/{client-id}/sensor-reading | sensor readings published on this topic as json |
 | hand-sanitiser-levels/{client-id}/messages | topic for sending messages to devices |
 | hand-sanitiser-levels/{client-id}/messages/led | topic to control on device led. payload should be a string and one of `on`, `off`, or `blink`. |
+| hand-sanitiser-levels/{client-id}/messages/location | set the devices location. payload should be a string. |
 | hand-sanitiser-levels/{client-id}/messages/poll-interval | topic to set poll interval on device. payload should be an integer. |
 | hand-sanitiser-levels/{client-id}/messages/polling-hours | topic to set polling hours on device. payload should be json with following keys: `{'start': start hour, 'end': ending hour}`. hours should be integers. |
 |  |  |
