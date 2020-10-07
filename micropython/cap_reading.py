@@ -20,6 +20,10 @@ import d32_led
 
 import config
 
+# define sensor type
+METHOD = "multipoint"
+# METHOD = "single"
+
 # define pins
 FULL_PIN = const(13)
 TOP_PIN = const(12)
@@ -187,23 +191,25 @@ def run():
         c_top = t_top.read()
         c_bottom = t_bottom.read()
         c_full = t_full.read()
-        c_calibrated = c_full / (c_bottom - c_top)
+        # c_calibrated = c_full / (c_bottom - c_top)
 
         mqtt_payload = {
             'timestamp': ts_format,
             'meta-data': {
                 'device': CLIENT_ID,
-                'method': 'multipoint',
+                'method': METHOD,
                 'location': settings['location']
             },
             'measures': {
-                'capacitance-top': c_top,
-                'capacitance-bottom': c_bottom,
                 'capacitance-full-length': c_full,
-                'capacitance-calibrated': c_calibrated,
                 'battery': d32_batterymon.read_battery()
             }
         }
+
+        if METHOD == "multipoint":
+            mqtt_payload['measures']['capacitance-top'] = c_top
+            mqtt_payload['measures']['capacitance-bottom'] = c_bottom
+            mqtt_payload['measures']['capacitance-calibrated'] = c_full / (c_bottom - c_top)
 
         for server in SERVERS:
             try:
