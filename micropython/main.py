@@ -1,3 +1,3 @@
-import multipoint_cap_reading
+import cap_reading
 
-# multipoint_cap_reading.run()
+cap_reading.run()
