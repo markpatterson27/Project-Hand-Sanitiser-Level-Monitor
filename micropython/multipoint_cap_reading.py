@@ -38,6 +38,7 @@ CLIENT_ID = uos.uname()[0].upper().encode('utf-8') + b"-" + ubinascii.hexlify(ma
 BASE_TOPIC = b"hand-sanitiser-levels"
 SUBSCRIBE_TOPIC = BASE_TOPIC + b'/' + CLIENT_ID + b'/messages/#'
 
+# TODO convert variable settings to dict
 led_status_blink = True
 led_blink = False
 led_blink_count = 10
@@ -46,6 +47,12 @@ polling_hours = {   # hour of day
     "start": 8,
     "end": 20
 }
+# if not deepsleep
+#   save to rtc
+#   json.dumps(rtc.memory())
+# elif reset from deepsleep
+#   get from rtc
+#   json.loads(rtc.memory())
 
 # NTP settings
 # ntptime.host = config.NTP_SERVER
@@ -153,6 +160,8 @@ def mqtt_cb(topic, msg):
             polling_hours = msg[0]['end']
         print("polling hours: ", polling_hours)
 
+    # TODO set rtc memory
+
 
 # main loop
 def run():
@@ -160,6 +169,9 @@ def run():
     global poll_interval, polling_hours
     
     try:
+        # TODO save/retrive setting to rtc memory
+        # if machine.reset_cause() != machine.DEEPSLEEP_RESET:
+        #     reset = True
         
         wifi_connect()
         # set_time()
