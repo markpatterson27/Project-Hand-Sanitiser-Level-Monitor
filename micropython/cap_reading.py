@@ -158,7 +158,7 @@ def mqtt_cb(topic, msg):
             settings['polling_hours']['end'] = msg[0]['end']
         print("polling hours: ", settings['polling_hours'])
 
-    machine.rtc.memory(json.dumps(settings))    # save settings to rtc memory
+    machine.RTC().memory(json.dumps(settings))    # save settings to rtc memory
 
 
 # main loop
@@ -168,10 +168,10 @@ def run():
     
     try:
         if machine.reset_cause() == machine.DEEPSLEEP_RESET:
-            settings = json.loads(machine.rtc.memory()) # load settings from rtc memory
+            settings = json.loads(machine.RTC().memory()) # load settings from rtc memory
             print('settings retrieved: ', settings)
         else:
-            machine.rtc.memory(json.dumps(settings))    # save settings to rtc memory
+            machine.RTC().memory(json.dumps(settings))    # save settings to rtc memory
             print('settings saved: ', settings)
         
         wifi_connect()
