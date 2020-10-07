@@ -38,26 +38,21 @@ CLIENT_ID = uos.uname()[0].upper().encode('utf-8') + b"-" + ubinascii.hexlify(ma
 BASE_TOPIC = b"hand-sanitiser-levels"
 SUBSCRIBE_TOPIC = BASE_TOPIC + b'/' + CLIENT_ID + b'/messages/#'
 
-# TODO convert variable settings to dict
-led_status_blink = True
+settings = {
+    'led_status_blink': True,
+    'poll_interval': 5,   # time in minutes
+    'polling_hours' : {    # hour of day
+        'start': 8,
+        'end': 20
+    },
+    'location': "nowhere"
+}
+
 led_blink = False
 led_blink_count = 10
-poll_interval = 5   # time in minutes
-polling_hours = {   # hour of day
-    "start": 8,
-    "end": 20
-}
-# if not deepsleep
-#   save to rtc
-#   json.dumps(rtc.memory())
-# elif reset from deepsleep
-#   get from rtc
-#   json.loads(rtc.memory())
 
 # NTP settings
 # ntptime.host = config.NTP_SERVER
-
-location="nowhere"
 
 
 # try connecting to access point
@@ -117,9 +112,8 @@ def set_time():
 
 # mqtt callback
 def mqtt_cb(topic, msg):
-    global led_status_blink, led_blink, led_blink_count
-    global location
-    global poll_interval, polling_hours
+    global led_blink, led_blink_count
+    global settings
 
     print("message received")
     print("topic: ", topic)
@@ -128,9 +122,9 @@ def mqtt_cb(topic, msg):
     # led control
     if topic == SUBSCRIBE_TOPIC[:-1]+ b"led":
         if msg == b"on":
-            led_status_blink = True
+            settings['led_status_blink'] = True
         elif msg == b"off":
-            led_status_blink = False
+            settings['led_status_blink'] = False
         elif msg.split(b":")[0] == b"blink":
             led_blink = True
             try:
@@ -143,35 +137,38 @@ def mqtt_cb(topic, msg):
 
     # set location
     elif topic == SUBSCRIBE_TOPIC[:-1]+b"location":
-        location = msg.decode()
-        print("location: ", location)
+        settings['location'] = msg.decode()
+        print("location: ", settings['location'])
     
     # change polling interval
     elif topic == SUBSCRIBE_TOPIC[:-1]+b"poll-interval":
         if msg.isdigit():
-            poll_interval = msg
-        print("poll interval: ", poll_interval)
+            settings['poll_interval'] = msg
+        print("poll interval: ", settings['poll_interval'])
 
     # change polling hours
     elif topic == SUBSCRIBE_TOPIC[:-1]+b"polling-hours":
         if msg[0]['start'].isdigit():
-            polling_hours = msg[0]['start']
+            settings['polling_hours']['start'] = msg[0]['start']
         if msg[0]['end'].isdigit():
-            polling_hours = msg[0]['end']
-        print("polling hours: ", polling_hours)
+            settings['polling_hours']['end'] = msg[0]['end']
+        print("polling hours: ", settings['polling_hours'])
 
-    # TODO set rtc memory
+    machine.rtc.memory(json.dumps(settings))    # save settings to rtc memory
 
 
 # main loop
 def run():
-    global led_status_blink, led_blink, led_blink_count
-    global poll_interval, polling_hours
+    global led_blink, led_blink_count
+    global settings
     
     try:
-        # TODO save/retrive setting to rtc memory
-        # if machine.reset_cause() != machine.DEEPSLEEP_RESET:
-        #     reset = True
+        if machine.reset_cause() == machine.DEEPSLEEP_RESET:
+            settings = json.loads(machine.rtc.memory()) # load settings from rtc memory
+            print('settings retrieved: ', settings)
+        else:
+            machine.rtc.memory(json.dumps(settings))    # save settings to rtc memory
+            print('settings saved: ', settings)
         
         wifi_connect()
         # set_time()
@@ -180,7 +177,7 @@ def run():
 
         ts = utime.localtime()
         # if rtc not set, or first poll of polling period
-        if ts[0] == 2000 or ts[3] == polling_hours['start']:
+        if ts[0] == 2000 or ts[3] == settings['polling_hours']['start']:
             set_time()
             ts = utime.localtime()
 
@@ -197,7 +194,7 @@ def run():
             'meta-data': {
                 'device': CLIENT_ID,
                 'method': 'multipoint',
-                'location': location
+                'location': settings['location']
             },
             'measures': {
                 'capacitance-top': c_top,
@@ -223,7 +220,7 @@ def run():
                 # c.disconnect()
                 c.set_callback(mqtt_cb)
                 c.subscribe(SUBSCRIBE_TOPIC)
-                if led_status_blink:
+                if settings['led_status_blink']:
                     d32_led.blink(LED_PIN, 3, 0.3, 0.3)
                 c.check_msg()
                 c.disconnect()
@@ -233,11 +230,11 @@ def run():
             d32_led.blink(LED_PIN, led_blink_count, 0.2, 0.2)
             led_blink = False
 
-        if ts[0] != 2000 and (ts[3] > polling_hours['end'] or ts[3] < polling_hours['start']):
-            h = (24 - ts[3] + polling_hours['start'])%24
+        if ts[0] != 2000 and (ts[3] > settings['polling_hours']['end'] or ts[3] < settings['polling_hours']['start']):
+            h = (24 - ts[3] + settings['polling_hours']['start'])%24
             m = h*60 - ts[4]
         else:
-            m = poll_interval
+            m = settings['poll_interval']
 
         print("deep sleeping for {} minutes".format(m))
         machine.deepsleep(m*60*1000)
