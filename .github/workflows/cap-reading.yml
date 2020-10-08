@@ -1,0 +1,20 @@
+# workflow for testing multipoint cap reading script
+
+name: Cap-Reading-testing
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  # check if job can be called test
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      #TODO create imported module stubs and add to test environment
