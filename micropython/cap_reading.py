@@ -216,7 +216,9 @@ def run():
                 server_address_parts = server.split(":")
                 print("trying to connect to {}".format(server))
                 c = MQTTClient(CLIENT_ID, server_address_parts[0], server_address_parts[1])
-                c.connect()
+                if not c.connect(False):
+                    print("new mqtt session")
+                    c.subscribe(SUBSCRIBE_TOPIC, qos=1)
                 # disconnected = False
             except:
                 print("{} not found".format(server))
@@ -225,9 +227,11 @@ def run():
                 print("MQTT message sent to {}".format(server))
                 # c.disconnect()
                 c.set_callback(mqtt_cb)
-                c.subscribe(SUBSCRIBE_TOPIC)
+                # c.subscribe(SUBSCRIBE_TOPIC, qos=1)
                 if settings['led_status_blink']:
                     d32_led.blink(LED_PIN, 3, 0.3, 0.3)
+                else:
+                    utime.sleep(1)
                 c.check_msg()
                 c.disconnect()
                 break
