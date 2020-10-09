@@ -8,13 +8,15 @@ IoT project looking at possible ways to measure level of sanitiser left at sanit
 
 | File/Folder | Description |
 |--- | --- |
+| docker-compose-stack/ | Docker compose project |
+| micropython/ | sync folder for micropython devices |
 |  |  |
 
 <br>
 
 ## Branches
 
-**master**: main branch. currently not using other branches.
+**master**: main branch.  
 
 <br>
 
