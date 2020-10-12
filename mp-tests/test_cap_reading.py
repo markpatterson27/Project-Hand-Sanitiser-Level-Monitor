@@ -17,6 +17,9 @@ sys.modules['usocket'] = socket
 sys.modules['ustruct'] = struct
 sys.modules['utime'] = time
 
+import _config
+sys.modules['config'] = _config
+
 # import file to test
 import cap_reading
 

@@ -1,5 +1,12 @@
 # config file. replace values below and rename file "config.py"
 
+# check if const() defined
+try:
+    x = const(1)
+except NameError:
+    print("const not defined")
+    const = lambda x: x
+
 # WIFI_SSID = "<wifi ssid>"
 # WIFI_PSK = "<wifi passphrase>"
 
