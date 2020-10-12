@@ -1,4 +1,6 @@
-# Project: Hand Sanitiser Level Monitor 
+# Project: Hand Sanitiser Level Monitor
+
+![MicroPython Code Tests](https://github.com/markpatterson27/Project-Hand-Sanitiser-Level-Monitor/workflows/MicroPython%20Code%20Tests/badge.svg)
 
 IoT project looking at possible ways to measure level of sanitiser left at sanitiser stations. 
 
