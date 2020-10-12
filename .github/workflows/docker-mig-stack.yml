@@ -6,7 +6,8 @@ name: Stack-Test
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    paths:
+      - 'docker-compose-stack/**'
   pull_request:
     branches: [ master ]
 

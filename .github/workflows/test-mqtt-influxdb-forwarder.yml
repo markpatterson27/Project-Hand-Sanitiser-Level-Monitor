@@ -4,7 +4,8 @@ name: MQTT-InfluxDB-Forwarder Tests
 
 on:
   push:
-    branches: [ master ]
+    paths:
+      - 'docker-compose-stack/mqtt-influxdb-forwarder/**'
   pull_request:
     branches: [ master ]
 

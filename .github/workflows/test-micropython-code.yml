@@ -4,7 +4,9 @@ name: MicroPython Code Tests
 
 on:
   push:
-    branches: [ master ]
+    paths:
+      - 'micropython/**'
+      - 'mp-tests/**'
   pull_request:
     branches: [ master ]
 
