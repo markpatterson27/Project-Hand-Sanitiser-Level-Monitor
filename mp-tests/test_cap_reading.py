@@ -119,7 +119,8 @@ class Test_CapReadingMQTTCb(unittest.TestCase):
             cap_reading.settings['location'] = 'nowhere'    # reset location
             message = location.encode()
             cap_reading.mqtt_cb(topic, message)
-            self.assertEqual(cap_reading.settings['location'], location)
+            with self.subTest(location):
+                self.assertEqual(cap_reading.settings['location'], location)
 
 
 
