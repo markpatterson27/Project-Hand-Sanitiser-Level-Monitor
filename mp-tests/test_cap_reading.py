@@ -107,10 +107,21 @@ class Test_CapReadingMQTTCb(unittest.TestCase):
                 self.assertEqual(cap_reading.led_blink_count, i)
                 self.assertFalse(cap_reading.settings['led_status_blink'])
 
+    def test_location_setting(self):
+        '''
+        test location messages set location
+        '''
+        topic = cap_reading.SUBSCRIBE_TOPIC[:-1] + b"location"
+
+        locations = ['somewhere', 'not here', 'over there', '123456']
+
+        for location in locations:
+            cap_reading.settings['location'] = 'nowhere'    # reset location
+            message = location.encode()
+            cap_reading.mqtt_cb(topic, message)
+            self.assertEqual(cap_reading.settings['location'], location)
 
 
-    # test location topic
-    # - for range of messages
 
     # test poll-interval topic
     # - message int
