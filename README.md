@@ -10,6 +10,7 @@ IoT project looking at possible ways to measure level of sanitiser left at sanit
 |--- | --- |
 | docker-compose-stack/ | Docker compose project |
 | micropython/ | sync folder for micropython devices |
+| mp-tests/ | folder for test files testing micropython project |
 |  |  |
 
 <br>
