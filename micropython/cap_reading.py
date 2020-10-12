@@ -20,6 +20,13 @@ import d32_led
 
 import config
 
+# check if const() defined
+try:
+    x = const(1)
+except NameError:
+    print("const not defined")
+    const = lambda x: x
+
 # define sensor type
 METHOD = "multipoint"
 # METHOD = "single"
