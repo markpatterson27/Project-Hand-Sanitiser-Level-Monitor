@@ -1,2 +1,2 @@
 def uname():
-    return ('test')
+    return ('test',)
