@@ -1,5 +1,6 @@
 import unittest
 import os, sys
+import json
 
 # add module dirs to path
 # sys.path.append("../")
@@ -143,11 +144,42 @@ class Test_CapReadingMQTTCb(unittest.TestCase):
             with self.subTest(interval):
                 self.assertEqual(cap_reading.settings['poll_interval'], 5)
 
+    def test_pollinghours_setting(self):
+        '''
+        test polling-hours messages set the polling hours
+        '''
+        topic = cap_reading.SUBSCRIBE_TOPIC[:-1] + b"polling-hours"
 
+        cap_reading.settings['polling_hours'] = {    # hour of day
+            'start': 8,
+            'end': 20
+        }
 
+        # test changing one key at a time
+        for k in cap_reading.settings['polling_hours'].keys():
+            for i in range(0,24):
+                cap_reading.settings['polling_hours'] = {    # reset
+                    'start': 8,
+                    'end': 20
+                }
+                message = {k: i}
+                cap_reading.mqtt_cb(topic, json.dumps(message))
+                with self.subTest(k+str(i)):
+                    self.assertEqual(cap_reading.settings['polling_hours'][k], i)
 
-    # test polling-hours topic
-    # - start
-    # - end
-    # - partial message
+        # test changing both keys at a time
+        for i in range(0,24):
+            for j in range(0,24):
+                cap_reading.settings['polling_hours'] = {    # reset
+                    'start': 8,
+                    'end': 20
+                }
+                message = {
+                    'start': i,
+                    'end': j
+                }
+                cap_reading.mqtt_cb(topic, json.dumps(message))
+                with self.subTest(str(i)+':'+str(j)):
+                    self.assertEqual(cap_reading.settings['polling_hours']['start'], i)
+                    self.assertEqual(cap_reading.settings['polling_hours']['end'], j)
 
