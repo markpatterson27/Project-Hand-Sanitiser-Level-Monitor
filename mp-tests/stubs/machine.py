@@ -145,3 +145,16 @@ class TouchPad:
 
     def read(self):
         return 200
+
+class RTC:
+
+    def __init__ (self):
+        self._memory = b''
+
+    @property
+    def memory(self):
+        return self._memory
+
+    @memory.setter
+    def memory(self, memory):
+        self._memory = memory
