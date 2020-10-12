@@ -21,15 +21,103 @@ import cap_reading
 
 
 class Test_CapReadingMQTTCb(unittest.TestCase):
-    '''
+    ''' test mqtt_cb callback function
     '''
 
     def setUp(self):
         '''
         '''
-        pass
+        # set initial settings
+        cap_reading.led_blink = False
+        cap_reading.led_blink_count = 10
+        cap_reading.settings = {
+            'led_status_blink': True,
+            'poll_interval': 5,   # time in minutes
+            'polling_hours' : {    # hour of day
+                'start': 8,
+                'end': 20
+            },
+            'location': "nowhere"
+        }
 
-    def test_passing(self):
+    def test_led_control(self):
         '''
+        test led control messages are parsed
+
+        states checked:
+          - on -> on
+          - on -> off
+          - off -> on
+          - off -> off
+          - nonsense message -> no state change
         '''
-        self.assertTrue(True)
+        topic = cap_reading.SUBSCRIBE_TOPIC[:-1] + b"led"
+
+        cap_reading.led_blink = False
+        cap_reading.led_blink_count = 10
+
+        # test status led on/off
+        start_values = [True, False]
+        for start_value in start_values:
+            with self.subTest('on'):
+                cap_reading.settings['led_status_blink'] = start_value
+                message = b"on"
+
+                cap_reading.mqtt_cb(topic, message)
+
+                self.assertTrue(cap_reading.settings['led_status_blink'])
+                self.assertFalse(cap_reading.led_blink)
+
+            with self.subTest('off'):
+                cap_reading.settings['led_status_blink'] = start_value
+                message = b"off"
+
+                cap_reading.mqtt_cb(topic, message)
+
+                self.assertFalse(cap_reading.settings['led_status_blink'])
+                self.assertFalse(cap_reading.led_blink)
+
+            with self.subTest('nonsense'):
+                cap_reading.settings['led_status_blink'] = start_value
+                message = b"nonsense"
+
+                cap_reading.mqtt_cb(topic, message)
+
+                self.assertEqual(cap_reading.settings['led_status_blink'], start_value)
+                self.assertFalse(cap_reading.led_blink)
+
+        # test blink parsing
+        messages = [b"blink", b"blink:nonsense"]
+        for message in messages:
+            with self.subTest(message):
+                cap_reading.led_blink = False
+                cap_reading.led_blink_count = 10
+                # message = b"blink"
+                cap_reading.mqtt_cb(topic, message)
+                self.assertTrue(cap_reading.led_blink)
+                self.assertEqual(cap_reading.led_blink_count, 10)
+                self.assertFalse(cap_reading.settings['led_status_blink'])
+        for i in range(1, 21):
+            with self.subTest('blink:'+str(i)):
+                cap_reading.led_blink = False
+                cap_reading.led_blink_count = 10
+                message = b"blink:" + str(i).encode()
+                cap_reading.mqtt_cb(topic, message)
+                self.assertTrue(cap_reading.led_blink)
+                self.assertEqual(cap_reading.led_blink_count, i)
+                self.assertFalse(cap_reading.settings['led_status_blink'])
+
+
+
+    # test location topic
+    # - for range of messages
+
+    # test poll-interval topic
+    # - message int
+    # - message not int
+
+    # test polling-hours topic
+    # - start
+    # - end
+    # - partial message
+
