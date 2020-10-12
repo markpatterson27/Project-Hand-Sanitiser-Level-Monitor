@@ -71,7 +71,8 @@ time.sleep_ms = sleep_ms_for_monkey_patching
 
 
 def unique_id():
-    return b'000000000000'
+    # return '000000'
+    return bytes(6)
 
 
 class Pin:
