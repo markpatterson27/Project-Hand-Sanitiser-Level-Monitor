@@ -87,7 +87,7 @@ class Test_CapReadingMQTTCb(unittest.TestCase):
                 self.assertFalse(cap_reading.led_blink)
 
         # test blink parsing
-        messages = [b"blink", b"blink:nonsense"]
+        messages = [b"blink", b"blink:nonsense", b"blink:5.3"]
         for message in messages:
             with self.subTest(message):
                 cap_reading.led_blink = False
