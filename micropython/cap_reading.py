@@ -160,12 +160,13 @@ def mqtt_cb(topic, msg):
 
     # change polling hours
     elif topic == SUBSCRIBE_TOPIC[:-1]+b"polling-hours":
+        m = json.loads(msg)
         # if msg[0]['start'].isdigit():
-        if isinstance(msg[0]['start'], int):
-            settings['polling_hours']['start'] = msg[0]['start']
+        if 'start' in m and isinstance(m['start'], int):
+            settings['polling_hours']['start'] = m['start']
         # if msg[0]['end'].isdigit():
-        if isinstance(msg[0]['end'], int):
-            settings['polling_hours']['end'] = msg[0]['end']
+        if 'end' in m and isinstance(m['end'], int):
+            settings['polling_hours']['end'] = m['end']
         print("polling hours: ", settings['polling_hours'])
 
     machine.RTC().memory(json.dumps(settings))    # save settings to rtc memory
