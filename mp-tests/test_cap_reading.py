@@ -122,11 +122,29 @@ class Test_CapReadingMQTTCb(unittest.TestCase):
             with self.subTest(location):
                 self.assertEqual(cap_reading.settings['location'], location)
 
+    def test_pollinterval_setting(self):
+        '''
+        test poll-interval messages set the polling interval
+        '''
+        topic = cap_reading.SUBSCRIBE_TOPIC[:-1] + b"poll-interval"
+
+        # test int intervals
+        for i in range(1, 60):
+            cap_reading.settings['poll_interval'] = 5    # reset interval
+            cap_reading.mqtt_cb(topic, i)
+            with self.subTest(i):
+                self.assertEqual(cap_reading.settings['poll_interval'], i)
+
+        # test not intervals
+        intervals = ['nan', b'nonsense', 4.4, 4.8, 5.3, 7.8]
+        for interval in intervals:
+            cap_reading.settings['poll_interval'] = 5    # reset interval
+            cap_reading.mqtt_cb(topic, interval)
+            with self.subTest(interval):
+                self.assertEqual(cap_reading.settings['poll_interval'], 5)
 
 
-    # test poll-interval topic
-    # - message int
-    # - message not int
+
 
     # test polling-hours topic
     # - start
