@@ -70,6 +70,10 @@ time.sleep_us = sleep_us_for_monkey_patching
 time.sleep_ms = sleep_ms_for_monkey_patching
 
 
+def unique_id():
+    return b'000000000000'
+
+
 class Pin:
     IN = "in"
     OUT = "out"
@@ -78,13 +82,14 @@ class Pin:
         self.triggerValuesForTesting = []
 
     # noinspection PyUnusedLocal,PyUnusedLocal
-    def __init__(self, pin, mode=OUT, pull=None):
+    def __init__(self, pin, mode=OUT, pull=None, value=0):
         self.currentStateForTesting = None
         self.currentStateForTesting = 1
         self.currentStateForTesting = None
         self.pinForTesting = pin
         self.triggerValuesForTesting = []
         self.resetExpectationsForTesting()
+        self.value(value)
 
     def on(self):
         self.currentStateForTesting = 1
@@ -118,3 +123,25 @@ class Timer:
     def init(self, period, mode=PERIODIC, callback=None):
         self.is_running_for_testing = True
 
+
+class ADC:
+
+    ATTN_11DB = "attenuate 11DB"
+
+    def __init__(self, pin):
+        self.pinForTesting = pin
+
+    def atten(self, attenuation):
+        self.attenForTesting = attenuation
+        # print("TEST: ", attenuation)
+
+    def read(self):
+        return 200
+
+class TouchPad:
+
+    def __init__(self, pinObj):
+        self.pinObjectForTesting = pinObj
+
+    def read(self):
+        return 200
