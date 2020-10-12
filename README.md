@@ -117,3 +117,5 @@ Wire the components as shown in the diagram. Place the other end of the wire on 
 <br />
 
 ## References
+
+- Testing stubs: https://github.com/tflander/esp32-machine-emulator
