@@ -153,15 +153,18 @@ def mqtt_cb(topic, msg):
     
     # change polling interval
     elif topic == SUBSCRIBE_TOPIC[:-1]+b"poll-interval":
-        if msg.isdigit():
+        # if msg.isdigit():
+        if isinstance(msg, int):
             settings['poll_interval'] = msg
         print("poll interval: ", settings['poll_interval'])
 
     # change polling hours
     elif topic == SUBSCRIBE_TOPIC[:-1]+b"polling-hours":
-        if msg[0]['start'].isdigit():
+        # if msg[0]['start'].isdigit():
+        if isinstance(msg[0]['start'], int):
             settings['polling_hours']['start'] = msg[0]['start']
-        if msg[0]['end'].isdigit():
+        # if msg[0]['end'].isdigit():
+        if isinstance(msg[0]['end'], int):
             settings['polling_hours']['end'] = msg[0]['end']
         print("polling hours: ", settings['polling_hours'])
 
