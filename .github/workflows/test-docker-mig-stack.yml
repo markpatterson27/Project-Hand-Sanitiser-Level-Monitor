@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Stack-Test
+name: Stack-Integration-Test
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -14,7 +14,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build-test:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -82,3 +82,24 @@ jobs:
       # check ntp server running
       - name: Check ntp
         run: ntpdate -q 127.0.0.1
+    
+      # check invalid messages are handled
+      - name: Check invalid messages handled
+        run: |
+          MESSAGE="{}"
+          mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/test/sensor-reading -m $MESSAGE -d
+          MESSAGE=string
+          mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/test/sensor-reading -m $MESSAGE -d
+          MESSAGE=7
+          mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/test/sensor-reading -m $MESSAGE -d
+          MESSAGE="{\"meta-data\":{\"device\":\"test\"}"
+          mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/test/sensor-reading -m $MESSAGE -d
+          MESSAGE="{\"measures\":{\"sensor1\":51,\"sensor2\":62}"
+          mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/test/sensor-reading -m $MESSAGE -d
+          mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/test/sensor-reading -n -d
+          sleep 5
+          MESSAGE="{\"meta-data\":{\"device\":\"test\"},\"measures\":{\"sensor1\":98,\"sensor2\":99}}"
+          mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/test/sensor-reading -m $MESSAGE -d
+          sleep 10
+          docker logs handsanitiserlevelmonitor_forwarder_1
+          docker exec handsanitiserlevelmonitor_influxdb_1 influx -database "HandSanitiserLevels" -execute "SELECT LAST(sensor1) FROM \"2_weeks\".\"sensor-readings\" WHERE device = 'test'" | grep -q 98

@@ -46,12 +46,20 @@ def on_message(client, userdata, msg):
     topic = msg.topic[len(BASE_TOPIC+'/'):]
     if any(pass_topic in topic for pass_topic in pass_topics) and topic != 'messages': # payload on device/sensor
         print(topic)
-        message = {
-            'topic': topic,
-            'payload': json.loads(msg.payload)#.decode("utf-8")
-        }
-        print(message['payload'])
-        incoming_queue.append(message)
+        try:
+            message = {
+                'topic': topic,
+                'payload': json.loads(msg.payload)#.decode("utf-8")
+            }
+            print(message['payload'])
+        except TypeError:   # catch invalid json deserialise
+            print("Invalid payload Type")
+            # raise
+        except ValueError:
+            print("Invalid payload Value")
+            # raise
+        else:
+            incoming_queue.append(message)
 
 def process_queue():
     global incoming_queue
@@ -64,8 +72,8 @@ def process_queue():
 
         print("Topic: {}".format(message['topic']))
 
-        # process sensor readings
-        if '/sensor' in message['topic']:
+        # process sensor readings if measures exist
+        if '/sensor' in message['topic'] and isinstance(message['payload'], dict) and 'measures' in message['payload'].keys():
             last_child_topic = message['topic'].rsplit('/', 1)[1]
             print('last child topic: {}'.format(last_child_topic))
 
@@ -87,15 +95,15 @@ def process_queue():
             
             ## map tags
             db_point['tags'] = {}
-            for k in message['payload']['meta-data'].keys():
-                db_point['tags'][k] = message['payload']['meta-data'][k]
+            if 'meta-data' in message['payload'].keys():    # check payload has meta-data
+                for k in message['payload']['meta-data'].keys():
+                    db_point['tags'][k] = message['payload']['meta-data'][k]
 
             ## map fields
             fields = {}
             for k in message['payload']['measures'].keys():
                 fields[k] = message['payload']['measures'][k]
                 print("key: {}".format(k))
-
             db_point['fields'] = fields
 
             db_payload.append(db_point)

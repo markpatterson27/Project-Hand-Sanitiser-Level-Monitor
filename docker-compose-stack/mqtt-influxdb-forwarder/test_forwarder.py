@@ -101,6 +101,44 @@ class Test_ForwarderOnMessage(unittest.TestCase):
             with self.subTest(sub_topic):
                 self.assertEqual(len(forwarder.incoming_queue),0)
 
+    def test_empty_invalid_payload(self):
+        '''
+        check empty or invalid payloads are caught and handled
+        '''
+        # topics to check
+        sub_topics = ['test/sensor-reading', 'test/sensor-error']
+
+        test_payloads = [
+            {},
+            [{}],
+            # json.dumps({}),
+            'string',
+            '',
+            bytes(4),
+            # json.dumps('string'),
+            7
+        ]
+
+        for sub_topic in sub_topics:
+            for test_payload in test_payloads:
+                # reset queue to empty and check empty
+                forwarder.incoming_queue = []
+                self.assertEqual(len(forwarder.incoming_queue),0)
+
+                # set message topic
+                test_topic = forwarder.BASE_TOPIC + '/' + sub_topic
+                self.message.topic = test_topic.encode()
+
+                # set message payload
+                self.message.payload = test_payload
+
+                # test response
+                with self.subTest(sub_topic+':'+str(test_payloads.index(test_payload))):
+                    # call on_message() function
+                    forwarder.on_message(None, None, self.message)
+                    # self.assertRaises((TypeError,ValueError), forwarder.on_message, None, None, self.message)
+                    self.assertEqual(len(forwarder.incoming_queue),0)
+
 
 class Test_ForwarderProcessQueue(unittest.TestCase):
     ''' test process_queue function
@@ -149,6 +187,23 @@ class Test_ForwarderProcessQueue(unittest.TestCase):
                 'sensor2': 2.4
             }
         }
+        self.payload_missing_metadata = {
+            'timestamp': self.now,
+            'measures': {
+                'sensor1': 1.3,
+                'sensor2': 2.4
+            }
+        }
+        self.payload_missing_measures = {
+            'timestamp': self.now,
+            'meta-data': {
+                'device': 'unittest',
+                'location': 'nowhere'
+            },
+        }
+        self.payload_empty = {}
+        self.payload_int = 5
+        self.payload_string = 'string'
 
     def tearDown(self):
         '''
@@ -249,7 +304,7 @@ class Test_ForwarderProcessQueue(unittest.TestCase):
         expected_time = self.now
         self.assertEqual(response_time, expected_time)
 
-    def test_timestamp_maps(self):
+    def test_notimestamp_maps(self):
         '''
         test that if no timestamp exists one is created and mapped to time
         '''
@@ -321,6 +376,56 @@ class Test_ForwarderProcessQueue(unittest.TestCase):
             self.assertEqual(response_tags, expected_tags)
         with self.subTest('fields'):
             self.assertEqual(response_fields, expected_fields)
+
+    def test_partial_payload_handled(self):
+        '''
+        test that missing parts of payload is handled
+        '''
+        with self.subTest('no meta-data'):
+            # message should process, with no tags added to db_payload object
+            # reset to empty queue
+            forwarder.incoming_queue = []
+
+            # add sensor-readings messsage
+            message = {
+                'topic': 'test/sensor-reading',
+                'payload': self.payload_missing_metadata
+            }
+            forwarder.incoming_queue.append(message)
+
+            # process queue
+            response_payload = forwarder.process_queue()
+
+            self.assertEqual(len(response_payload),1)
+            self.assertFalse(response_payload[0]['tags'])   # tags should be empty
+
+    def test_invalid_payload_handled(self):
+        '''
+        test that invalid payloads are handled
+        
+        messages should not be processed and added to db if their payloads are not valid for the db
+           - payload with missing measures
+           - empty dict payload
+           - non dict payloads
+        '''
+        payloads = [self.payload_missing_measures, self.payload_empty, self.payload_int, self.payload_string]
+
+        for payload in payloads:
+            # reset to empty queue
+            forwarder.incoming_queue = []
+
+            # add sensor-readings messsage
+            message = {
+                'topic': 'test/sensor-reading',
+                'payload': payload
+            }
+            forwarder.incoming_queue.append(message)
+
+            # process queue
+            response_payload = forwarder.process_queue()
+
+            with self.subTest(payloads.index(payload)):
+                self.assertEqual(len(response_payload),0)
 
 
 if __name__ == '__main__':
