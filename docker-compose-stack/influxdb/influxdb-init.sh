@@ -25,3 +25,9 @@ END"
 influx -execute "CREATE CONTINUOUS QUERY \"cq_copy_across\" ON $DEFAULT_DATABASE BEGIN \
  SELECT * INTO \"4_years\".\"sensor-errors\" FROM \"2_weeks\".\"sensor-errors\" \
 END"
+
+
+#TODO:
+# - contiuous query for lowest battery level? how to reset when battery charged?
+# - averaging capacitance readings
+# - highest and lowest cap readings
