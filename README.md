@@ -1,8 +1,12 @@
 # Project: Hand Sanitiser Level Monitor
 
 ![MicroPython Code Tests](https://github.com/markpatterson27/Project-Hand-Sanitiser-Level-Monitor/workflows/MicroPython%20Code%20Tests/badge.svg)
+![Stack-Integration-Test](https://github.com/markpatterson27/Project-Hand-Sanitiser-Level-Monitor/workflows/Stack-Integration-Test/badge.svg)
 
-IoT project looking at possible ways to measure level of sanitiser left at sanitiser stations. 
+IoT project looking at possible ways to measure the level of hand sanitiser left at sanitiser stations.
+
+![dataflow diagram](assets/Dataflow-Diagram-embed-solid-2.svg)
+
 
 <br>
 
@@ -12,6 +16,8 @@ IoT project looking at possible ways to measure level of sanitiser left at sanit
 |--- | --- |
 | docker-compose-stack/ | Docker compose project |
 | micropython/ | sync folder for micropython devices |
+| micropython/cap_reading.py | micropython script that regularly reads capacitance and battery level and sends the data to a mqtt server. |
+| micropython/level-test.py | micropython script that reads capacitance levels and displays a bar graph on a terminal screen. |
 | mp-tests/ | folder for test files testing micropython project |
 |  |  |
 
