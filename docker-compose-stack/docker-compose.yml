@@ -71,6 +71,20 @@ services:
     environment:
       - NTP_SERVERS=time.cloudflare.com,time1.google.com
 
+  sqlserver:
+    # build: .
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    # container_name: 
+    ports:
+      - '1433:1433'
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SQL_PASSWORD}
+    restart: unless-stopped
+
 volumes:
   influxdb_data:
   grafana_data:
+  sqlserver_data:
