@@ -72,8 +72,8 @@ services:
       - NTP_SERVERS=time.cloudflare.com,time1.google.com
 
   sqlserver:
-    # build: .
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    build: ./sql-server
+    # image: mcr.microsoft.com/mssql/server:2019-latest
     # container_name: 
     ports:
       - '1433:1433'
