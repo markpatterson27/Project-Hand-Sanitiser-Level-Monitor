@@ -101,50 +101,51 @@ def process_queue():
 
 
     # process sensor readings
-    db_statement_string = 'INSERT INTO SensorReadings(Datestamp, Device, Location, Method, CapacitanceFullLength, CapacitanceTop, CapacitanceBottom, CapacitanceCallibrated, BatteryLevel)'
-    db_statement_string += ' VALUES '
+    if sensor_readings:
+        db_statement_string = 'INSERT INTO SensorReadings(Datestamp, Device, Location, Method, CapacitanceFullLength, CapacitanceTop, CapacitanceBottom, CapacitanceCallibrated, BatteryLevel)'
+        db_statement_string += ' VALUES '
 
-    for sensor_reading in sensor_readings:
-        db_row = {}
-        ## map timestamp
-        # if timestamp exists
-        if 'timestamp' in sensor_reading.keys():
-            print('ts found')            
-            db_row['time'] = datetime.datetime.strptime(sensor_reading['timestamp'][:-1], "%Y-%m-%dT%H:%M:%S").strftime("%Y-%m-%d %H:%M:%S.%f") # change format
-        else:
-            db_row['time'] = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")
-            print('ts not found or too old')
-
-        ## map tags
-        db_row['device'] = sensor_reading['meta-data']['device']    # required field
-        for k in ['location', 'method']:
-            if k in sensor_reading['meta-data'].keys():
-                db_row[k] = "'" + sensor_reading['meta-data'][k] + "'"
+        for sensor_reading in sensor_readings:
+            db_row = {}
+            ## map timestamp
+            # if timestamp exists
+            if 'timestamp' in sensor_reading.keys():
+                print('ts found')            
+                db_row['time'] = datetime.datetime.strptime(sensor_reading['timestamp'][:-1], "%Y-%m-%dT%H:%M:%S").strftime("%Y-%m-%d %H:%M:%S.%f") # change format
             else:
-                db_row[k] = 'NULL'
+                db_row['time'] = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")
+                print('ts not found or too old')
+
+            ## map tags
+            db_row['device'] = sensor_reading['meta-data']['device']    # required field
+            for k in ['location', 'method']:
+                if k in sensor_reading['meta-data'].keys():
+                    db_row[k] = "'" + sensor_reading['meta-data'][k] + "'"
+                else:
+                    db_row[k] = 'NULL'
+            
+            ## map measures
+            for k in ['capacitance-full-length', 'capacitance-top', 'capacitance-bottom', 'capacitance-callibrated', 'battery']:
+                if k in sensor_reading['measures'].keys():
+                    db_row[k] = sensor_reading['measures'][k]
+                else:
+                    db_row[k] = 'NULL'
+
+            db_statement_string += "('{0:s}', '{1:s}', {2:s}, {3:s}, {4}, {5}, {6}, {7}, {8}),".format(
+                db_row['time'],
+                db_row['device'],
+                db_row['location'],
+                db_row['method'],
+                db_row['capacitance-full-length'],
+                db_row['capacitance-top'],
+                db_row['capacitance-bottom'],
+                db_row['capacitance-callibrated'],
+                db_row['battery']
+            )
         
-        ## map measures
-        for k in ['capacitance-full-length', 'capacitance-top', 'capacitance-bottom', 'capacitance-callibrated', 'battery']:
-            if k in sensor_reading['measures'].keys():
-                db_row[k] = sensor_reading['measures'][k]
-            else:
-                db_row[k] = 'NULL'
+        db_statement_string = db_statement_string[:-1]  # trim last ','
 
-        db_statement_string += "('{0:s}', '{1:s}', {2:s}, {3:s}, {4}, {5}, {6}, {7}, {8}),".format(
-            db_row['time'],
-            db_row['device'],
-            db_row['location'],
-            db_row['method'],
-            db_row['capacitance-full-length'],
-            db_row['capacitance-top'],
-            db_row['capacitance-bottom'],
-            db_row['capacitance-callibrated'],
-            db_row['battery']
-        )
-    
-    db_statement_string[:-1]
-
-    db_statement_strings.append(db_statement_string)
+        db_statement_strings.append(db_statement_string)
 
     return db_statement_strings
 
