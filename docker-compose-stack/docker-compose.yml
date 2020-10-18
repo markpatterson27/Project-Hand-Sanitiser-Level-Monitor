@@ -82,6 +82,22 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=${SQL_PASSWORD}
+      
+    restart: unless-stopped
+
+  mqttsqlforwarder:
+    build: ./mqtt-sql-forwarder
+    # container_name: mqttforwarder
+    environment:
+      - BASE_TOPIC=${BASE_TOPIC}
+      - MQTT_USERNAME=${MQTT_USERNAME}
+      - MQTT_PASSWORD=${MQTT_PASSWORD}
+      - SQL_USERNAME=${SQL_USERNAME}
+      - SQL_PASSWORD=${SQL_PASSWORD}
+      - SQL_DATABASE=${SQL_DATABASE}
+    depends_on:
+      - mqtt
+      - sqlserver
     restart: unless-stopped
 
 volumes:

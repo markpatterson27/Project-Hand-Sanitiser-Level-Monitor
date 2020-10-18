@@ -74,3 +74,4 @@ Sensor values are written into a `SensorReadings` table. MQTT message payloads h
 
 - https://pypi.org/project/paho-mqtt/
 - https://github.com/mkleehammer/pyodbc
+- https://github.com/vbentley/docker-base-images
