@@ -40,11 +40,14 @@ def on_message(client, userdata, msg):
     print("Received a message on topic: " + msg.topic)
 
     # add topics to be processed to the list
-    pass_topics = ['/sensor-reading']
-
+    # pass_topics = ['/sensor-reading']
+    
     # strip out base topic
     topic = msg.topic[len(BASE_TOPIC+'/'):]
-    if any(pass_topic in topic for pass_topic in pass_topics) and topic != 'messages': # payload on device/sensor
+    
+    # only pass sensor-reading topics
+    last_child_topic = msg.topic.rsplit('/', 1)[-1]
+    if last_child_topic == "sensor-reading": # payload on device/sensor
         print(topic)
         try:
             message = {
