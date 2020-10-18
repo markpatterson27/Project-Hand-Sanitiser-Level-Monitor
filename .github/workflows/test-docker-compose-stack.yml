@@ -127,6 +127,7 @@ jobs:
       - name: Check data in sql table
         run: |
           sleep 10
-          SQL="SELECT [Id], [Datestamp], [Device], [Location], [Method], [CapacitanceFullLength], [CapacitanceTop], [CapacitanceBottom], [CapacitanceCalibrated], [BatteryLevel] FROM [HandSanitiserLevels].[dbo].[SensorReadings]"
-          docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q "$SQL"
-      # TODO grep output
+          SQL="SELECT TOP(1) [Datestamp], [CapacitanceFullLength] FROM [HandSanitiserLevels].[dbo].[SensorReadings] ORDER BY Datestamp DESC"
+          docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q "$SQL" | grep -q 202
+          SQL="SELECT TOP(1) [Datestamp], [BatteryLevel] FROM [HandSanitiserLevels].[dbo].[SensorReadings] ORDER BY Datestamp DESC"
+          docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q "$SQL" | grep -q 4.04
