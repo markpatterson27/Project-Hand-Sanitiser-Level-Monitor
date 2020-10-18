@@ -17,7 +17,7 @@ All messages on the base topic are subscribed to: i.e. `BASE_TOPIC+'/#'`. The fo
 | Topic | Description |
 | --- | --- |
 | last child topic: `/sensor-reading` | Any message with the last child topic of `sensor-reading`. |
-| last child topic: `/sensor-errors` | Any message with the last child topic of `sensor-errors`. |
+|  |  |
 
 <br />
 
@@ -44,7 +44,31 @@ payload {
 
 ## SQL Data Rows
 
+Sensor values are written into a `SensorReadings` table. MQTT message payloads have to be specifically mapped to SQL columns.
 
+**Table structure:**  
+| Column | Description |
+| --- | --- |
+| Id | Auto-generated Id number. Primary key|
+| Datestamp | Date and time of reading |
+| Device | Id of device taking reading |
+| Location | Location of device |
+| Method | Method used to gather sensor readings |
+| CapacitanceFullLength | Capacitance value of full length foil strips |
+| CapacitanceTop | Capacitance value of short foil strips  at top of measurement level |
+| CapacitanceBottom | Capacitance value of short foil strips  at bottom of measurement level |
+| CapacitanceCallibrated | Value generated from full length reading divided by difference between top and bottom readings |
+| BatteryLevel | Voltage level reading of battery |
+
+<br />
+
+**Example data:**  
+| Id | Datestamp | Device | Location | Method | CapacitanceFullLength | CapacitanceTop | CapacitanceBottom | CapacitanceCallibrated | BatteryLevel |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2020-10-17 10:00:00 | ESP32-abc | somewhere | multipoint | 450 | 400 | 460 | 7.5 | 3.9 |
+| 2 | 2020-10-17 10:01:00 | ESP32-xyz | somewhere | single | 250 |  |  |  | 3.7 |
+
+<br />
 
 ## References
 
