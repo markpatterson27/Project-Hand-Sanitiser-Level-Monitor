@@ -102,7 +102,7 @@ def process_queue():
 
     # process sensor readings
     if sensor_readings:
-        db_statement_string = 'INSERT INTO SensorReadings(Datestamp, Device, Location, Method, CapacitanceFullLength, CapacitanceTop, CapacitanceBottom, CapacitanceCallibrated, BatteryLevel)'
+        db_statement_string = 'INSERT INTO SensorReadings(Datestamp, Device, Location, Method, CapacitanceFullLength, CapacitanceTop, CapacitanceBottom, CapacitanceCalibrated, BatteryLevel)'
         db_statement_string += ' VALUES '
 
         for sensor_reading in sensor_readings:

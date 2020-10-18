@@ -110,11 +110,11 @@ jobs:
 
       # check sql database exists
       - name: Check database exists on sql server container
-        run: docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q "SELECT NAME FROM sys.sysdatabases" | grep -q HandSanitiserLevels
+        run: docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q "SELECT NAME FROM sys.sysdatabases" | grep -q "HandSanitiserLevels"
 
       # check sql table exists
       - name: Check SensorReadings table exists on sql server container
-        run: docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q "SELECT TABLE_NAME FROM SimpleDB.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'" | grep -q SensorReadings
+        run: docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q "SELECT TABLE_NAME FROM HandSanitiserLevels.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'" | grep -q SensorReadings
 
       # check data forwards into table
       # only specific payloads are forwarded to sql
@@ -126,6 +126,6 @@ jobs:
       - name: Check data in sql table
         run: |
           sleep 10
-          SQL="SELECT [Id],[Datestamp],[Device],[Location],[Method],[CapacitanceFullLength],[CapacitanceTop],[CapacitanceBottom],[CapacitanceCallibrated],[BatteryLevel] FROM [HandSanitiserLevels].[dbo].[SensorReadings]"
-          docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q $SQL
+          SQL="SELECT [Id], [Datestamp], [Device], [Location], [Method], [CapacitanceFullLength], [CapacitanceTop], [CapacitanceBottom], [CapacitanceCalibrated], [BatteryLevel] FROM [HandSanitiserLevels].[dbo].[SensorReadings]"
+          docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q "$SQL"
       # TODO grep output

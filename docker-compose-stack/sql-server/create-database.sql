@@ -31,7 +31,7 @@ BEGIN
         [CapacitanceFullLength] [decimal](4, 0) NULL,
         [CapacitanceTop] [decimal](4, 0) NULL,
         [CapacitanceBottom] [decimal](4, 0) NULL,
-        [CapacitanceCallibrated] [float] NULL,
+        [CapacitanceCalibrated] [float] NULL,
         [BatteryLevel] [float] NULL,
         CONSTRAINT [PK_Sensor-Readings] PRIMARY KEY CLUSTERED 
         (
