@@ -65,12 +65,12 @@ jobs:
           MESSAGE="{\"meta-data\":{\"device\":\"test\"},\"measures\":{\"sensor1\":5,\"sensor2\":43}}"
           mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/test/sensor-reading -m $MESSAGE -d
           
-      - name: Check sensor-readings table exists
+      - name: Check influxdb sensor-readings table exists
         run: |
           sleep 10
           docker exec handsanitiserlevelmonitor_influxdb_1 influx -database "HandSanitiserLevels" -execute "SHOW MEASUREMENTS" | grep -q sensor-readings
 
-      - name: Check sensor values in table
+      - name: Check sensor values in influxdb table
         run: |
           docker exec handsanitiserlevelmonitor_influxdb_1 influx -database "HandSanitiserLevels" -execute "SELECT SUM(sensor1) FROM \"2_weeks\".\"sensor-readings\" WHERE device = 'test'" | grep -q 5
           docker exec handsanitiserlevelmonitor_influxdb_1 influx -database "HandSanitiserLevels" -execute "SELECT SUM(sensor2) FROM \"2_weeks\".\"sensor-readings\" WHERE device = 'test'" | grep -q 43
@@ -103,3 +103,29 @@ jobs:
           sleep 10
           docker logs handsanitiserlevelmonitor_forwarder_1
           docker exec handsanitiserlevelmonitor_influxdb_1 influx -database "HandSanitiserLevels" -execute "SELECT LAST(sensor1) FROM \"2_weeks\".\"sensor-readings\" WHERE device = 'test'" | grep -q 98
+
+      # check sql server container running
+      - name: Check sqlcmd exists on sql server container
+        run: docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q "SELECT NAME FROM sys.sysdatabases" | grep -q master
+
+      # check sql database exists
+      - name: Check database exists on sql server container
+        run: docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q "SELECT NAME FROM sys.sysdatabases" | grep -q HandSanitiserLevels
+
+      # check sql table exists
+      - name: Check SensorReadings table exists on sql server container
+        run: docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q "SELECT TABLE_NAME FROM SimpleDB.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'" | grep -q SensorReadings
+
+      # check data forwards into table
+      # only specific payloads are forwarded to sql
+      - name: publish sensor readings message for sql db
+        run: |
+          MESSAGE="{\"meta-data\":{\"device\":\"test\"},\"measures\":{\"capacitance-full-length\":202,\"battery\":4.04}}"
+          mosquitto_pub -h 127.0.0.1 -p 1883 -u mqtt -P password -t hand-sanitiser-levels/test/sensor-reading -m $MESSAGE -d
+
+      - name: Check data in sql table
+        run: |
+          sleep 10
+          SQL="SELECT [Id],[Datestamp],[Device],[Location],[Method],[CapacitanceFullLength],[CapacitanceTop],[CapacitanceBottom],[CapacitanceCallibrated],[BatteryLevel] FROM [HandSanitiserLevels].[dbo].[SensorReadings]"
+          docker exec handsanitiserlevelmonitor_sqlserver_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Strong!Passw0rd -Q $SQL
+      # TODO grep output
