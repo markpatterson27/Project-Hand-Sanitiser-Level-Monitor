@@ -24,13 +24,13 @@ IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'Sens
 BEGIN
     CREATE TABLE [dbo].[SensorReadings](
         [Id] [int] IDENTITY(1,1) NOT NULL,
-        [Datetime] [datetime2](7) NOT NULL,
+        [Datestamp] [datetime2](7) NOT NULL,
         [Device] [nvarchar](50) NOT NULL,
         [Location] [nvarchar](50) NULL,
         [Method] [nvarchar](50) NULL,
         [CapacitanceFullLength] [decimal](4, 0) NULL,
         [CapacitanceTop] [decimal](4, 0) NULL,
-        [CapacitianceBottom] [decimal](4, 0) NULL,
+        [CapacitanceBottom] [decimal](4, 0) NULL,
         [CapacitanceCallibrated] [float] NULL,
         [BatteryLevel] [float] NULL,
         CONSTRAINT [PK_Sensor-Readings] PRIMARY KEY CLUSTERED 
