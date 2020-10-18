@@ -182,6 +182,7 @@ def main():
             print('Connected to SQL Server')
         except:
             connOK = False
+            print('.', end='')
         time.sleep(2)
 
     # Create a cursor from the connection
