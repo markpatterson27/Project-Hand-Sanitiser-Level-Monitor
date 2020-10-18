@@ -7,8 +7,8 @@ name: Stack-Integration-Test
 on:
   push:
     branches: [ master ]
-    # paths:
-    #   - 'docker-compose-stack/**'
+    paths:
+      - 'docker-compose-stack/**'
   pull_request:
     branches: [ master ]
 
