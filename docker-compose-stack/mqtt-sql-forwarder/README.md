@@ -75,3 +75,4 @@ Sensor values are written into a `SensorReadings` table. MQTT message payloads h
 - https://pypi.org/project/paho-mqtt/
 - https://github.com/mkleehammer/pyodbc
 - https://github.com/vbentley/docker-base-images
+- https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-linux-ver15
