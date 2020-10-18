@@ -125,7 +125,7 @@ def process_queue():
                     db_row[k] = 'NULL'
             
             ## map measures
-            for k in ['capacitance-full-length', 'capacitance-top', 'capacitance-bottom', 'capacitance-callibrated', 'battery']:
+            for k in ['capacitance-full-length', 'capacitance-top', 'capacitance-bottom', 'capacitance-calibrated', 'battery']:
                 if k in sensor_reading['measures'].keys():
                     db_row[k] = sensor_reading['measures'][k]
                 else:
@@ -139,7 +139,7 @@ def process_queue():
                 db_row['capacitance-full-length'],
                 db_row['capacitance-top'],
                 db_row['capacitance-bottom'],
-                db_row['capacitance-callibrated'],
+                db_row['capacitance-calibrated'],
                 db_row['battery']
             )
         
