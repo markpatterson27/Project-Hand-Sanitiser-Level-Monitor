@@ -5,7 +5,7 @@
 
 IoT project looking at possible ways to measure the level of hand sanitiser left at sanitiser stations.
 
-![dataflow diagram](assets/Dataflow-Diagram-embed-solid-2.svg)
+![dataflow diagram](assets/Dataflow-Diagram-embed-solid-3.svg)
 
 
 <br>
