@@ -6,8 +6,9 @@ name: Stack-Integration-Test
 # events but only for the master branch
 on:
   push:
-    paths:
-      - 'docker-compose-stack/**'
+    branches: [ master ]
+    # paths:
+    #   - 'docker-compose-stack/**'
   pull_request:
     branches: [ master ]
 
