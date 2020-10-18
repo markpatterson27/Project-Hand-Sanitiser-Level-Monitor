@@ -3,7 +3,7 @@
 ![Stack-Integration-Test](https://github.com/markpatterson27/Project-Hand-Sanitiser-Level-Monitor/workflows/Stack-Integration-Test/badge.svg)
 ![MQTT-InfluxDB-Forwarder Tests](https://github.com/markpatterson27/Project-Hand-Sanitiser-Level-Monitor/workflows/MQTT-InfluxDB-Forwarder%20Tests/badge.svg)
 
-Docker compose file for setting up a MQTT, InfluxDB, Grafana stack. An NTP container is also included.
+Docker compose file for setting up a MQTT, InfluxDB, Grafana stack and a MQTT, SQL stack. An NTP container is also included.
 
 <br />
 
