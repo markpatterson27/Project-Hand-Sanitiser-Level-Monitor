@@ -7,6 +7,7 @@ IoT project looking at possible ways to measure the level of hand sanitiser left
 
 ![dataflow diagram](assets/Dataflow-Diagram-embed-solid-3.svg)
 
+![proof of concept bottle and dashboard](assets/poc-bottle-dashboard.png)
 
 <br>
 
