@@ -127,6 +127,14 @@ Wire the components as shown in the diagram. Place the other end of the wire on 
 
 <br />
 
+## Level Test
+
+This test was performed to determine if there was enough change in capacitance between full and empty to be able to reliably determine the level of sanitiser in the container. The script [level_test.py](micropython/level_test.py) was used. This script measures capacitance on a foil script, self-calibrating maximum and minimum readings, then calculates a percentage level for the current reading. This level is displayed on the serial connection as a bar graph.
+
+![level test gif](assets/level-test.gif)
+
+<br />
+
 ## References
 
 - Testing stubs: https://github.com/tflander/esp32-machine-emulator
