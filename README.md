@@ -19,6 +19,7 @@ IoT project looking at possible ways to measure the level of hand sanitiser left
 | micropython/cap_reading.py | micropython script that regularly reads capacitance and battery level and sends the data to a mqtt server. |
 | micropython/level-test.py | micropython script that reads capacitance levels and displays a bar graph on a terminal screen. |
 | mp-tests/ | folder for test files testing micropython project |
+| powerbi-dasboards/ | some simple Power BI dashboards graphing data from the SQL Server container |
 |  |  |
 
 <br>
